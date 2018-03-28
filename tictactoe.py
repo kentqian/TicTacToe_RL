@@ -104,7 +104,7 @@ class Policy(nn.Module):
     """
     The Tic-Tac-Toe Policy
     """
-    def __init__(self, input_size=27, hidden_size=64, output_size=9):
+    def __init__(self, input_size=27, hidden_size=128, output_size=9):
         super(Policy, self).__init__()
         # TODO
         self.NN = nn.Sequential(
@@ -158,7 +158,7 @@ def compute_returns(rewards, gamma=1.0):
 
     return G_t_list
 
-def finish_episode(saved_rewards, saved_logprobs, gamma=1.0):
+def finish_episode(saved_rewards, saved_logprobs, gamma=0.9):
     """Samples an action from the policy at the state."""
     policy_loss = []
     returns = compute_returns(saved_rewards, gamma)
@@ -176,14 +176,14 @@ def finish_episode(saved_rewards, saved_logprobs, gamma=1.0):
 def get_reward(status):
     """Returns a numeric given an environment status."""
     return {
-            Environment.STATUS_VALID_MOVE  : 1, # TODO
+            Environment.STATUS_VALID_MOVE  : 0, # TODO
             Environment.STATUS_INVALID_MOVE: -100,
-            Environment.STATUS_WIN         : 100,
+            Environment.STATUS_WIN         : 10,
             Environment.STATUS_TIE         : 5,
             Environment.STATUS_LOSE        : -10
     }[status]
 
-def train(policy, env, gamma=1.0, log_interval=1000):
+def train(policy, env, gamma=0.8, log_interval=1000):
     """Train policy gradient."""
     optimizer = optim.Adam(policy.parameters(), lr=0.001)
     scheduler = torch.optim.lr_scheduler.StepLR(
@@ -205,7 +205,7 @@ def train(policy, env, gamma=1.0, log_interval=1000):
             saved_logprobs.append(logprob)
             saved_rewards.append(reward)
 
-        R = compute_returns(saved_rewards)[0]
+        R = compute_returns(saved_rewards,0.9)[0]
         running_reward += R
 
         finish_episode(saved_rewards, saved_logprobs, gamma)
