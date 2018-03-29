@@ -166,6 +166,7 @@ def finish_episode(saved_rewards, saved_logprobs, gamma=0.9):
     # subtract mean and std for faster training
     returns = (returns - returns.mean()) / (returns.std() +
                                             np.finfo(np.float32).eps)
+    print returns
     for log_prob, reward in zip(saved_logprobs, returns):
         policy_loss.append(-log_prob * reward)
     policy_loss = torch.cat(policy_loss).sum()
