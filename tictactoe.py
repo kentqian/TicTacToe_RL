@@ -136,8 +136,8 @@ def compute_returns(rewards, gamma=1.0):
                       obtained at time step t
       @param gamma: the discount factor
       @returns list of floats representing the episode's returns
-          G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + ... 
- 
+          G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + ...
+
     >>> compute_returns([0,0,0,1], 1.0)
     [1.0, 1.0, 1.0, 1.0]
     >>> compute_returns([0,0,0,1], 0.9)
@@ -146,7 +146,7 @@ def compute_returns(rewards, gamma=1.0):
     [-2.5965000000000003, -2.8850000000000002, -2.6500000000000004, -8.5, -10.0]
     """
     # TODO
-    
+
     G_t_list = []
     rewards_from_back = 0
 
@@ -244,6 +244,27 @@ def load_weights(policy, episode):
     weights = torch.load("ttt/policy-%d.pkl" % episode)
     policy.load_state_dict(weights)
 
+#------------------- Part 5 ------------------------------------#
+def play_with_random(policy):
+    # create env
+    env = Environment()
+    done = False
+    state = env.reset()
+    while not done:
+        action, logprob = select_action(policy, state)
+        state, status, done = env.play_against_random(action)
+        if status == 'inv':
+            print("Invalid move")
+            done = True
+        elif status == 'win':
+            print("ML won")
+        elif status == 'tie':
+            print("It's tie")
+        elif status == "lose":
+            print("ML lose")
+        else:
+            env.render()
+        env.render()
 
 if __name__ == '__main__':
     import sys
@@ -260,4 +281,5 @@ if __name__ == '__main__':
         # using weightt checkpoint at episode int(<ep>)
         ep = int(sys.argv[1])
         load_weights(policy, ep)
-        print(first_move_distr(policy, env))
+        # print(first_move_distr(policy, env))
+        play_with_random(policy)
