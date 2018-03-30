@@ -104,7 +104,7 @@ class Policy(nn.Module):
     """
     The Tic-Tac-Toe Policy
     """
-    def __init__(self, input_size=27, hidden_size=128, output_size=9):
+    def __init__(self, input_size=27, hidden_size=256, output_size=9):
         super(Policy, self).__init__()
         # TODO
         self.NN = nn.Sequential(
@@ -179,7 +179,7 @@ def get_reward(status):
     """Returns a numeric given an environment status."""
     return {
             Environment.STATUS_VALID_MOVE  : 0, # TODO
-            Environment.STATUS_INVALID_MOVE: -100,
+            Environment.STATUS_INVALID_MOVE: -50,
             Environment.STATUS_WIN         : 10,
             Environment.STATUS_TIE         : 5,
             Environment.STATUS_LOSE        : -10
@@ -256,17 +256,42 @@ def play_with_random(policy):
         action, logprob = select_action(policy, state)
         state, status, done = env.play_against_random(action)
         if status == 'inv':
-            print("Invalid move")
+            #enve.render()
+            #print("Invalid move")
             done = True
+            return -2
         elif status == 'win':
-            print("ML won")
+            #env.render()
+            #print("Model won")
+            return 1
         elif status == 'tie':
-            print("It's tie")
+            #env.render()
+            #print("It's tie")
+            return 0
         elif status == "lose":
-            print("ML lose")
-        else:
             env.render()
-        env.render()
+            print("Model lose")
+            return -1
+        else:
+            #env.render()
+            pass
+    return false
+
+def part5(policy):
+    result = []
+    for i in range(100):
+        score = play_with_random(policy)
+        result.append(score)
+    tieNum = len(list(filter(lambda x: x == 0, result)))
+    wonNum = len(list(filter(lambda x: x == 1, result)))
+    loseNum = len(list(filter(lambda x: x == -1, result)))
+    invNum = len(list(filter(lambda x: x == -2, result)))
+
+    print("winning number out of 100: ", wonNum)
+    print("lose number out of 100: ", loseNum)
+    print("tie number out of 100: ", tieNum)
+    print("Invalid move out of 100: ", invNum)
+    print("winning ratio: ", float(wonNum/100.0))
 
 if __name__ == '__main__':
     import sys
@@ -283,5 +308,6 @@ if __name__ == '__main__':
         # using weightt checkpoint at episode int(<ep>)
         ep = int(sys.argv[1])
         load_weights(policy, ep)
-        # print(first_move_distr(policy, env))
-        play_with_random(policy)
+        #play_with_random(policy)
+        #print(first_move_distr(policy, env))
+        part5(policy)
