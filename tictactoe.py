@@ -163,12 +163,13 @@ def finish_episode(saved_rewards, saved_logprobs, gamma=0.9):
     policy_loss = []
     returns = compute_returns(saved_rewards, gamma)
     returns = torch.Tensor(returns)
+    # print (saved_rewards)
     # subtract mean and std for faster training
     returns = (returns - returns.mean()) / (returns.std() +
                                             np.finfo(np.float32).eps)
-    print returns
     for log_prob, reward in zip(saved_logprobs, returns):
         policy_loss.append(-log_prob * reward)
+    print (torch.cat(policy_loss))
     policy_loss = torch.cat(policy_loss).sum()
     policy_loss.backward(retain_graph=True)
     # note: retain_graph=True allows for multiple calls to .backward()
@@ -194,7 +195,7 @@ def train(policy, env, gamma=0.8, log_interval=1000):
     episode_return = []
     episode_count = []
 
-    for i_episode in range(0,50001):
+    for i_episode in range(0,1):
         saved_rewards = []
         saved_logprobs = []
         state = env.reset()
@@ -275,8 +276,8 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         # `python tictactoe.py` to train the agent
         a ,b = train(policy, env)
-        plt.plot(a,b)
-        plt.show()
+        # plt.plot(a,b)
+        # plt.show()
     else:
         # `python tictactoe.py <ep>` to print the first move distribution
         # using weightt checkpoint at episode int(<ep>)
