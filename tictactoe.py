@@ -254,21 +254,24 @@ def play_with_random(policy):
         action, logprob = select_action(policy, state)
         state, status, done = env.play_against_random(action)
         if status == 'inv':
+            #enve.render()
             #print("Invalid move")
             done = True
             return -2
         elif status == 'win':
-            #print("ML won")
+            #env.render()
+            #print("Model won")
             return 1
         elif status == 'tie':
-            #print("It's tie")
             #env.render()
+            #print("It's tie")
             return 0
         elif status == "lose":
-            #print("ML lose")
-            #env.render()
+            env.render()
+            print("Model lose")
             return -1
         else:
+            #env.render()
             pass
     return false
 
@@ -303,5 +306,6 @@ if __name__ == '__main__':
         # using weightt checkpoint at episode int(<ep>)
         ep = int(sys.argv[1])
         load_weights(policy, ep)
-        # print(first_move_distr(policy, env))
+        #play_with_random(policy)
+        #print(first_move_distr(policy, env))
         part5(policy)
