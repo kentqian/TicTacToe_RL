@@ -13,6 +13,8 @@ from torch.autograd import Variable
 
 import  matplotlib.pyplot as plt
 
+random.seed(10)
+
 class Environment(object):
     """
     The Tic-Tac-Toe Environment
@@ -244,7 +246,7 @@ def load_weights(policy, episode):
     weights = torch.load("ttt/policy-%d.pkl" % episode)
     policy.load_state_dict(weights)
 
-#------------------- Part 5 ------------------------------------#
+#------------------- Additional Codes ------------------------------------#
 def play_with_random(policy):
     # create env
     env = Environment()
@@ -291,6 +293,19 @@ def part5(policy):
     print("Invalid move out of 100: ", invNum)
     print("winning ratio: ", float(wonNum/100.0))
 
+def part7(policy, env):
+    y_axis = []
+    prob_val = []
+    episodes = np.arange(0,50001,1000)
+    for i in range(0,50001,1000):
+        load_weights(policy, i)
+        action_prob = first_move_distr(policy, env)
+        prob, position = action_prob.max(1)
+        y_axis.append(position[0])
+        prob_val.append(prob[0])
+    plt.plot(episodes,y_axis,'ro')
+    plt.show()
+
 if __name__ == '__main__':
     import sys
     policy = Policy()
@@ -298,14 +313,18 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 1:
         # `python tictactoe.py` to train the agent
-        a ,b = train(policy, env)
+        a, b = train(policy, env)
         plt.plot(a,b)
         plt.show()
+    elif sys.argv[1] == '-p5':
+        ep = int(sys.argv[2])
+        load_weights(policy, ep)
+        part5(policy)
+    elif sys.argv[1] == '-p7':
+        part7(policy, env)
     else:
         # `python tictactoe.py <ep>` to print the first move distribution
         # using weightt checkpoint at episode int(<ep>)
         ep = int(sys.argv[1])
         load_weights(policy, ep)
-        #play_with_random(policy)
-        #print(first_move_distr(policy, env))
-        part5(policy)
+        print (first_move_distr(policy, env))
